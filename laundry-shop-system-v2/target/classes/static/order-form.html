@@ -1,0 +1,54 @@
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>新增訂單 - 福興洗衣店</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+  <style>body{background:#fff;font-family:"Noto Sans TC",sans-serif}.container{max-width:600px}</style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2>新增訂單</h2>
+    <form id="orderForm">
+      <div class="mb-3"><label class="form-label">訂單編號</label><input type="text" id="orderNumber" class="form-control" required></div>
+      <div class="mb-3"><label class="form-label">訂單時間</label><input type="text" id="orderTime" class="form-control" readonly></div>
+      <div class="mb-3"><label class="form-label">交貨時間</label><input type="datetime-local" id="deliveryTime" class="form-control" required></div>
+      <div class="mb-3"><label class="form-label">訂單類型</label><select id="type" class="form-select"><option value="洗衣">送洗衣服</option><option value="修改">修改衣服</option></select></div>
+      <div class="mb-3"><label class="form-label">衣物類型</label><select id="category" class="form-select"><option>上衣</option><option>下身衣物</option><option>外套</option><option>連身衣物</option><option>內衣</option><option>襪子</option><option>帽子</option><option>圍巾</option><option>其他</option></select></div>
+      <div class="mb-3"><label class="form-label">數量</label><input type="number" id="quantity" class="form-control" required></div>
+      <div class="mb-3"><label class="form-label">顏色</label><input type="text" id="color" class="form-control" required></div>
+      <button type="submit" class="btn btn-primary w-100">送出訂單</button>
+    </form>
+  </div>
+  <script>
+    // 預設訂單時間為現在
+    document.getElementById('orderTime').value = new Date().toLocaleString();
+
+    document.getElementById('orderForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const data = {
+        orderNumber: document.getElementById('orderNumber').value,
+        orderTime: new Date().toISOString(),
+        deliveryTime: document.getElementById('deliveryTime').value,
+        type: document.getElementById('type').value,
+        category: document.getElementById('category').value,
+        quantity: parseInt(document.getElementById('quantity').value, 10),
+        color: document.getElementById('color').value
+      };
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (res.ok) {
+        const result = await res.json();
+        alert('訂單已建立，編號：' + result.orderId);
+        window.location.href = 'admin.html';
+      } else {
+        alert('建立失敗');
+      }
+    });
+  </script>
+</body>
+</html>
